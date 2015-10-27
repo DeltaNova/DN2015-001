@@ -29,6 +29,8 @@ include ~/bin/arduino.mk
 
 # Add '-g' to compiler flag to embed debug info (doesn't end up in .hex)
 CPPFLAGS += -g
+# Allow C++11
+CPPFLAGS += --std=gnu++11
 # Generate program .map at link stage
 LINKFLAGS += -Wl,-Map,$(TARGET).map
 ICSPFLAGS += -c usbtiny -p m328p
