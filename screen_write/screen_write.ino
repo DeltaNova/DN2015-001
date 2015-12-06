@@ -24,7 +24,7 @@
 #include <avr/pgmspace.h>
 #include <Wire.h> // Arduino Library with Serial & I2C interfaces
 #include <stdint.h>         // Enable fixed width integers.
-#include "ascii_buffer.h" // Include ASCII Chars & Symbols
+#include "ascii_buffer.h" // Include 'buffer' ASCII Chars & Symbols
 #define OLED_ADDR 0x3C // Address of I2C OLED Display
 
 // ---------------------------------------------------------------------
