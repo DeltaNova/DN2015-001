@@ -182,6 +182,7 @@ void disp_setup();
 void draw_buffer();
 void draw_buffer2();
 void clear_buffer();
+
 // ---------------------------------------------------------------------
 void setup() {
     //Serial.begin(9600); // Create a serial connection
@@ -298,41 +299,13 @@ void clear_buffer(){
     }
 }
 
-void PROGMEMwriteBuf()
+void PROGMEMwriteBuf(const uint8_t* buffer_to_write)
 {
     for (uint16_t i=0; i<1024; i++){
         Wire.beginTransmission(OLED_ADDR);
         Wire.write(0x40);      // Control Byte Data Stream
         for (uint8_t x=0; x<16; x++) {
-            Wire.write(pgm_read_byte(&buffer[i]));
-            i++;
-        }
-        i--;
-        Wire.endTransmission();
-    }
-}
-
-void PROGMEMwriteBuf2()
-{
-    for (uint16_t i=0; i<1024; i++){
-        Wire.beginTransmission(OLED_ADDR);
-        Wire.write(0x40);      // Control Byte Data Stream
-        for (uint8_t x=0; x<16; x++) {
-            Wire.write(pgm_read_byte(&buffer2[i]));
-            i++;
-        }
-        i--;
-        Wire.endTransmission();
-    }
-}
-
-void PROGMEMwriteBuf3()
-{
-    for (uint16_t i=0; i<1024; i++){
-        Wire.beginTransmission(OLED_ADDR);
-        Wire.write(0x40);      // Control Byte Data Stream
-        for (uint8_t x=0; x<16; x++) {
-            Wire.write(pgm_read_byte(&buffer3[i]));
+            Wire.write(pgm_read_byte(&buffer_to_write[i]));
             i++;
         }
         i--;
@@ -342,11 +315,11 @@ void PROGMEMwriteBuf3()
 
 void loop(){
     //draw_buffer();
-    PROGMEMwriteBuf();  // Write data to display buffer from program memory
+    PROGMEMwriteBuf(buffer);  // Write data to display buffer from program memory
     delay(2000);
-    PROGMEMwriteBuf2();     // Write data to display buffer from data space
+    PROGMEMwriteBuf(buffer2);
     delay(2000);
-    PROGMEMwriteBuf3(); // Write data to display buffer from program memory
+    PROGMEMwriteBuf(buffer3);
     delay(2000);
     clear_buffer();     // Clear display buffer
     delay(2000);
