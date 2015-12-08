@@ -313,6 +313,49 @@ void PROGMEMwriteBuf(const uint8_t* buffer_to_write)
     }
 }
 
+void writeLine(){
+    // Write Text Display Line
+
+    uint8_t databuffer[] = { // "Hello World!"
+        0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21
+    };
+
+    // Setup
+    //Wire.beginTransmission(OLED_ADDR);
+    //Wire.write(0x00); // Control Byte Command Stream
+    //Wire.write(0x21); // Set Column Address
+    //Wire.write(0x00); // Start at column 0
+    //Wire.write(0x7F); // End at column 127
+    //Wire.write(0x22); // Set Page (Row) address
+    //Wire.write(0x01); // Start on Page (Row) 1
+    //Wire.write(0x01); // End on Page (Row) 1
+    //Wire.endTransmission();
+
+
+    for (uint16_t i=0; i<12; i++){ // For each item in data buffer
+        Wire.beginTransmission(OLED_ADDR);
+        Wire.write(0x40); // Control Byte Data Stream
+        uint16_t offset = databuffer[i] * 6; // Multiply by 6 to get the character start position in the ascii_buffer
+        for ( uint16_t x =0; x<6; x++) { // Print each byte that makes up the character
+            //Wire.write(pgm_read_byte(&buffer[432+x]));
+            Wire.write(pgm_read_byte(&buffer[offset+x]));
+        }
+        Wire.endTransmission();
+    }
+
+    // Note: Reset the cursor position to Row 0, Col 0. Otherwise the buffers become offset on the next loop.
+    Wire.beginTransmission(OLED_ADDR);
+    Wire.write(0x00); // Control Byte Command Stream
+    Wire.write(0x21); // Set Column Address
+    Wire.write(0x00); // Start at column 0
+    Wire.write(0x7F); // End at column 127
+    Wire.write(0x22); // Set Page (Row) address
+    Wire.write(0x00); // Start on Page (Row) 0
+    Wire.write(0x07); // End on Page (Row) 7
+    Wire.endTransmission();
+
+}
+
 void loop(){
     //draw_buffer();
     PROGMEMwriteBuf(buffer);  // Write data to display buffer from program memory
@@ -323,4 +366,6 @@ void loop(){
     delay(2000);
     clear_buffer();     // Clear display buffer
     delay(2000);
+    writeLine();
+    delay(3000);
 }
