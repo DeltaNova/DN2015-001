@@ -28,8 +28,13 @@
 #define OLED_ADDR 0x3C // Address of I2C OLED Display
 
 // ---------------------------------------------------------------------
-
-const uint8_t buffer2[1024] PROGMEM = { // 128 x 64 Rodent Pattern
+// PROGMEM Strings/Buffers
+// -----------------------
+// "Hello World!"
+const uint8_t databuffer[12] PROGMEM = {0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21};
+// "
+// 128 x 64 Rodent Pattern
+const uint8_t buffer2[1024] PROGMEM = {
 
     0x00, 0x00, 0x20, 0x30, 0x28, 0x3C, 0x30, 0x30, 0x30, 0x30, 0x20, 0x20, 0x10, 0x08, 0x00, 0x00,
     0x00, 0x00, 0x08, 0x10, 0x20, 0x20, 0x30, 0x30, 0x30, 0x30, 0x3C, 0x28, 0x30, 0x20, 0x00, 0x00, // Reversed Rodent
@@ -103,8 +108,8 @@ const uint8_t buffer2[1024] PROGMEM = { // 128 x 64 Rodent Pattern
     0x00, 0x00, 0x20, 0x30, 0x28, 0x3C, 0x30, 0x30, 0x30, 0x30, 0x20, 0x20, 0x10, 0x08, 0x00, 0x00,
     0x00, 0x00, 0x20, 0x30, 0x28, 0x3C, 0x30, 0x30, 0x30, 0x30, 0x20, 0x20, 0x10, 0x08, 0x00, 0x00
     };
-
-const uint8_t buffer3[1024] PROGMEM = { // 128 x 64 Test Pattern
+// 128 x 64 Test Pattern
+const uint8_t buffer3[1024] PROGMEM = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x40, 0x20, 0x20, 0x20, 0x10, 0x10, 0x10,
     0x10, 0x10, 0x20, 0x20, 0x20, 0x40, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x80, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,
@@ -182,6 +187,8 @@ void disp_setup();
 void draw_buffer();
 void draw_buffer2();
 void clear_buffer();
+void setCursor(uint8_t row);
+void resetCursor();
 
 // ---------------------------------------------------------------------
 void setup() {
@@ -313,12 +320,8 @@ void PROGMEMwriteBuf(const uint8_t* buffer_to_write)
     }
 }
 
-void writeLine(){
+void writeLine(uint8_t* buffer_name, uint8_t buffer_length){
     // Write Text Display Line
-
-    uint8_t databuffer[] = { // "Hello World!"
-        0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21
-    };
 
     // Setup
     //Wire.beginTransmission(OLED_ADDR);
@@ -332,10 +335,10 @@ void writeLine(){
     //Wire.endTransmission();
 
 
-    for (uint16_t i=0; i<12; i++){ // For each item in data buffer
+    for (uint16_t i=0; i<buffer_length; i++){ // For each item in data buffer
         Wire.beginTransmission(OLED_ADDR);
         Wire.write(0x40); // Control Byte Data Stream
-        uint16_t offset = databuffer[i] * 6; // Multiply by 6 to get the character start position in the ascii_buffer
+        uint16_t offset = pgm_read_byte(&buffer_name[i]) * 6; // Multiply by 6 to get the character start position in the ascii_buffer
         for ( uint16_t x =0; x<6; x++) { // Print each byte that makes up the character
             //Wire.write(pgm_read_byte(&buffer[432+x]));
             Wire.write(pgm_read_byte(&buffer[offset+x]));
@@ -344,6 +347,26 @@ void writeLine(){
     }
 
     // Note: Reset the cursor position to Row 0, Col 0. Otherwise the buffers become offset on the next loop.
+
+
+}
+//void setCursor(uint8_t row, uint8_t col) {
+void setCursor(uint8_t row){
+    // Set Cursor Position
+    Wire.beginTransmission(OLED_ADDR);
+    Wire.write(0x00); // Control Byte Command Stream
+    Wire.write(0x21); // Set Column Address
+    Wire.write(0x00); // Start at column 0
+    Wire.write(0x7F); // End at column 127
+    Wire.write(0x22); // Set Page (Row) address - In this case both the same as writing to a single row.
+    Wire.write(row); // Start Page
+    Wire.write(row); // End Page
+    Wire.endTransmission();
+    }
+
+void resetCursor() {
+    // Reset the cursor position to Row 0, Col 0.
+    // Allow data to be written to entire screen
     Wire.beginTransmission(OLED_ADDR);
     Wire.write(0x00); // Control Byte Command Stream
     Wire.write(0x21); // Set Column Address
@@ -354,7 +377,7 @@ void writeLine(){
     Wire.write(0x07); // End on Page (Row) 7
     Wire.endTransmission();
 
-}
+    }
 
 void loop(){
     //draw_buffer();
@@ -366,6 +389,13 @@ void loop(){
     delay(2000);
     clear_buffer();     // Clear display buffer
     delay(2000);
-    writeLine();
+    setCursor(0);
+    writeLine(databuffer,12);
+    setCursor(2);
+    writeLine(databuffer,12);
+    setCursor(4);
+    writeLine(databuffer,12);
+    resetCursor();
+
     delay(3000);
 }
