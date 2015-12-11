@@ -351,12 +351,12 @@ void writeLine(uint8_t* buffer_name, uint8_t buffer_length){
 
 }
 //void setCursor(uint8_t row, uint8_t col) {
-void setCursor(uint8_t row){
+void setCursor(uint8_t row, uint8_t col){
     // Set Cursor Position
     Wire.beginTransmission(OLED_ADDR);
     Wire.write(0x00); // Control Byte Command Stream
     Wire.write(0x21); // Set Column Address
-    Wire.write(0x00); // Start at column 0
+    Wire.write(col); // Start at column 0
     Wire.write(0x7F); // End at column 127
     Wire.write(0x22); // Set Page (Row) address - In this case both the same as writing to a single row.
     Wire.write(row); // Start Page
@@ -389,11 +389,11 @@ void loop(){
     delay(2000);
     clear_buffer();     // Clear display buffer
     delay(2000);
-    setCursor(0);
+    setCursor(0,0);
     writeLine(databuffer,12);
-    setCursor(2);
+    setCursor(2,0);
     writeLine(databuffer,12);
-    setCursor(4);
+    setCursor(4,0);
     writeLine(databuffer,12);
     resetCursor();
 
