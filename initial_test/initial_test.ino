@@ -26,7 +26,7 @@
 #include <stdint.h>         // Enable fixed width integers.
 #include "ascii_buffer.h"
 #define OLED_ADDR 0x3C // Address of I2C OLED Display
-// This is a test line it serves no purpose.
+// This is a test line it serves no purpose. And it goes on.
 
 // ---------------------------------------------------------------------
 /*const uint8_t buffer [1024] PROGMEM = { // 128 x 64 Checkerboard Pattern
