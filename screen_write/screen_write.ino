@@ -362,7 +362,7 @@ void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_e
     Wire.write(row_start); // Start Page
     Wire.write(row_end); // End Page
     Wire.endTransmission();
-    }
+}
 
 void resetCursor() {
     // Reset the cursor position to Row 0, Col 0.
@@ -377,6 +377,16 @@ void resetCursor() {
     Wire.write(0x07); // End on Page (Row) 7
     Wire.endTransmission();
 
+}
+
+void setPageStartCol(uint8_t pscol){
+    uint8_t upper_nibble = (((pscol & 0xF0)>>4)|0x10);
+    uint8_t lower_nibble = pscol & 0x0F;
+    Wire.beginTransmission(OLED_ADDR);
+    Wire.write(0x00); // Control Byte Command Stream
+    Wire.write(lower_nibble); // Set Lower Col Start Addr (Page Addr Mode)
+    Wire.write(upper_nibble); // Set Upper Col Start Addr (Page Addr Mode)
+    Wire.endTransmission();
     }
 
 void setAddressMode(uint8_t mode){
