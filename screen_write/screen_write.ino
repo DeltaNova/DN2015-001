@@ -350,17 +350,17 @@ void writeLine(uint8_t* buffer_name, uint8_t buffer_length){
 
 
 }
-//void setCursor(uint8_t row, uint8_t col) {
-void setCursor(uint8_t row, uint8_t col){
+
+void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_end = 0x7F, uint8_t row_end = 0x08){
     // Set Cursor Position
     Wire.beginTransmission(OLED_ADDR);
     Wire.write(0x00); // Control Byte Command Stream
     Wire.write(0x21); // Set Column Address
-    Wire.write(col); // Start at column 0
-    Wire.write(0x7F); // End at column 127
+    Wire.write(col_start); // Start at column 0
+    Wire.write(col_end); // End at column 127
     Wire.write(0x22); // Set Page (Row) address - In this case both the same as writing to a single row.
-    Wire.write(row); // Start Page
-    Wire.write(row); // End Page
+    Wire.write(row_start); // Start Page
+    Wire.write(row_end); // End Page
     Wire.endTransmission();
     }
 
@@ -391,9 +391,18 @@ void loop(){
     delay(2000);
     setCursor(0,0);
     writeLine(databuffer,12);
-    setCursor(2,0);
+    setCursor(2,20);
     writeLine(databuffer,12);
-    setCursor(4,0);
+    setCursor(4,40);
+    writeLine(databuffer,12);
+    // DEV Note:
+    // When setting the cursor location for this last item it is with the
+    // knowledge that there is too much text to write than columns available on screen.
+    // If the same page start and end address are provided then the additional
+    // data begins to overwrite itself from the staring column.
+    // In this case the data is allowed to continue onto the next page
+    // but it begins to write to this page at the same starting column as before.
+    setCursor(6,80,127,7);
     writeLine(databuffer,12);
     resetCursor();
 
