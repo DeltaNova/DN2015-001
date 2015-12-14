@@ -379,6 +379,28 @@ void resetCursor() {
 
     }
 
+void setAddressMode(uint8_t mode){
+    // 0 = Horizontal (Default/Fallback)
+    // 1 = Vertical
+    // 2 = Page
+    Wire.beginTransmission(OLED_ADDR);
+    Wire.write(0x00);       // Control Byte Command Stream
+    Wire.write(0x20);       // Setup Address Mode
+    if (mode == 0){         // Setup Horizontal Mode
+        Wire.write(0x00);   // Horizontal
+    }
+    else if (mode == 1){    // Setup Vertical Mode
+        Wire.write(0x01);   // Vertical
+    }
+    else if (mode == 2){    // Setup Page Mode
+        Wire.write(0x02);   // Page
+    }
+    else{                   // Setup Horizontal Mode as fallback option
+        Wire.write(0x00);   // Horizontal
+    }
+    Wire.endTransmission();
+}
+
 void loop(){
     //draw_buffer();
     PROGMEMwriteBuf(buffer);  // Write data to display buffer from program memory
