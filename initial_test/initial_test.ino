@@ -1,4 +1,4 @@
-// Dn2015-001.ino - An arduino sketch that uses an i2c oled display.
+// DN2015-001.ino - An arduino sketch that uses an i2c oled display.
 /*
   Copyright (C) 2015  Matthew Tunstall
 
