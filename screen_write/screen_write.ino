@@ -187,8 +187,7 @@ void disp_setup();
 void draw_buffer();
 void draw_buffer2();
 void clear_buffer();
-void setCursor(uint8_t row);
-void resetCursor();
+void setCursor(uint8_t, uint8_t, uint8_t, uint8_t);
 
 // ---------------------------------------------------------------------
 void setup() {
@@ -364,21 +363,6 @@ void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_e
     Wire.endTransmission();
 }
 
-void resetCursor() {
-    // Reset the cursor position to Row 0, Col 0.
-    // Allow data to be written to entire screen
-    Wire.beginTransmission(OLED_ADDR);
-    Wire.write(0x00); // Control Byte Command Stream
-    Wire.write(0x21); // Set Column Address
-    Wire.write(0x00); // Start at column 0
-    Wire.write(0x7F); // End at column 127
-    Wire.write(0x22); // Set Page (Row) address
-    Wire.write(0x00); // Start on Page (Row) 0
-    Wire.write(0x07); // End on Page (Row) 7
-    Wire.endTransmission();
-
-}
-
 void setPageStartCol(uint8_t pscol){
     uint8_t upper_nibble = (((pscol & 0xF0)>>4)|0x10);
     uint8_t lower_nibble = pscol & 0x0F;
@@ -436,8 +420,7 @@ void loop(){
     // but it begins to write to this page at the same starting column as before.
     setCursor(6,80,127,7);
     writeLine(databuffer,12);
-    //resetCursor();
-    setCursor();
+    setCursor(); // Reset Cursor
 
     delay(3000);
 }
