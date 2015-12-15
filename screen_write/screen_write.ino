@@ -33,7 +33,7 @@
 // "Hello World!"
 const uint8_t databuffer[12] PROGMEM = {0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21};
 // "
-// 128 x 64 Rodent Pattern
+// 128 x 64 Rodent Pattern (Can be optimised, lots of duplicate data)
 const uint8_t buffer2[1024] PROGMEM = {
 
     0x00, 0x00, 0x20, 0x30, 0x28, 0x3C, 0x30, 0x30, 0x30, 0x30, 0x20, 0x20, 0x10, 0x08, 0x00, 0x00,
@@ -321,33 +321,22 @@ void PROGMEMwriteBuf(const uint8_t* buffer_to_write)
 
 void writeLine(const uint8_t* buffer_name, uint8_t buffer_length){
     // Write Text Display Line
+    // Note: Set cursor position before writing.
 
-    // Setup
-    //Wire.beginTransmission(OLED_ADDR);
-    //Wire.write(0x00); // Control Byte Command Stream
-    //Wire.write(0x21); // Set Column Address
-    //Wire.write(0x00); // Start at column 0
-    //Wire.write(0x7F); // End at column 127
-    //Wire.write(0x22); // Set Page (Row) address
-    //Wire.write(0x01); // Start on Page (Row) 1
-    //Wire.write(0x01); // End on Page (Row) 1
-    //Wire.endTransmission();
-
-
-    for (uint16_t i=0; i<buffer_length; i++){ // For each item in data buffer
+    // For each item in data buffer
+    for (uint16_t i=0; i<buffer_length; i++){
         Wire.beginTransmission(OLED_ADDR);
-        Wire.write(0x40); // Control Byte Data Stream
-        uint16_t offset = pgm_read_byte(&buffer_name[i]) * 6; // Multiply by 6 to get the character start position in the ascii_buffer
-        for ( uint16_t x =0; x<6; x++) { // Print each byte that makes up the character
-            //Wire.write(pgm_read_byte(&buffer[432+x]));
+        Wire.write(0x40);                   // Control Byte Data Stream
+        // Multiply by 6 to get char start position in the ascii_buffer
+        uint16_t offset = pgm_read_byte(&buffer_name[i]) * 6;
+        // Print each byte that makes up the character
+        for ( uint16_t x =0; x<6; x++) {
             Wire.write(pgm_read_byte(&buffer[offset+x]));
         }
         Wire.endTransmission();
     }
-
-    // Note: Reset the cursor position to Row 0, Col 0. Otherwise the buffers become offset on the next loop.
-
-
+    // Note: Reset the cursor position to Row 0, Col 0. Otherwise the
+    //       buffers become offset on the next loop.
 }
 
 void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_end = 0x7F, uint8_t row_end = 0x07){
@@ -357,7 +346,7 @@ void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_e
     Wire.write(0x21); // Set Column Address
     Wire.write(col_start); // Start at column 0
     Wire.write(col_end); // End at column 127
-    Wire.write(0x22); // Set Page (Row) address - In this case both the same as writing to a single row.
+    Wire.write(0x22); // Set Page (Row) address
     Wire.write(row_start); // Start Page
     Wire.write(row_end); // End Page
     Wire.endTransmission();
