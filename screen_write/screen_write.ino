@@ -436,7 +436,8 @@ void loop(){
     // but it begins to write to this page at the same starting column as before.
     setCursor(6,80,127,7);
     writeLine(databuffer,12);
-    resetCursor();
+    //resetCursor();
+    setCursor();
 
     delay(3000);
 }
