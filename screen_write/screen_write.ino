@@ -351,7 +351,7 @@ void writeLine(uint8_t* buffer_name, uint8_t buffer_length){
 
 }
 
-void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_end = 0x7F, uint8_t row_end = 0x08){
+void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_end = 0x7F, uint8_t row_end = 0x07){
     // Set Cursor Position
     Wire.beginTransmission(OLED_ADDR);
     Wire.write(0x00); // Control Byte Command Stream
