@@ -319,7 +319,7 @@ void PROGMEMwriteBuf(const uint8_t* buffer_to_write)
     }
 }
 
-void writeLine(uint8_t* buffer_name, uint8_t buffer_length){
+void writeLine(const uint8_t* buffer_name, uint8_t buffer_length){
     // Write Text Display Line
 
     // Setup
