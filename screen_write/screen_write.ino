@@ -25,8 +25,13 @@
 #include <Wire.h> // Arduino Library with Serial & I2C interfaces
 #include <stdint.h>         // Enable fixed width integers.
 #include "ascii_buffer.h" // Include 'buffer' ASCII Chars & Symbols
+
+#include "ssd1306.h"
+#include "twi.h" // My Wrapper around the <Wire.h>
 #define OLED_ADDR 0x3C // Address of I2C OLED Display
 
+typedef TWI I2C; // Create global instance of TWI/I2C bus called I2C
+SSD1306<I2C> OLED; // Create Global instance SSD1306 Class passing TWI/I2C interface to template
 // ---------------------------------------------------------------------
 // PROGMEM Strings/Buffers
 // -----------------------
@@ -183,223 +188,41 @@ const uint8_t buffer3[1024] PROGMEM = {
     0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-void disp_setup();
-void draw_buffer();
-void draw_buffer2();
-void clear_buffer();
-void setCursor(uint8_t, uint8_t, uint8_t, uint8_t);
+//void disp_setup();
+//void draw_buffer();
+//void draw_buffer2();
+//void clear_buffer();
+//void setCursor(uint8_t, uint8_t, uint8_t, uint8_t);
 
 // ---------------------------------------------------------------------
 void setup() {
-    //Serial.begin(9600); // Create a serial connection
-    Wire.begin();       // Join I2C Bus as Master
+
+    //Wire.begin();       // Join I2C Bus as Master
+    I2C.init();
+
     // Set I2C to 400KHz mode
-    TWBR=12;
-    disp_setup();       // Setup Display
-}
+    //TWBR=0x0C;
+    I2C.setSCLfreq(0x0C);
 
-void disp_setup(){
-    // Initialisation of OLED Display
-    Wire.beginTransmission(OLED_ADDR); // Start Transmitting
-    //Wire.write(0x00);                   // Low Col = 0
-    //Wire.write(0x10);                   // Hi Col = 0
-
-    // ---
-    //Wire.write(0x20);                   // Set Mem Addr Mode
-    //Wire.write(0x00);                   // 0x00 Horizontal
-
-    // Initialisation Based upon Application Note Example
-    Wire.write(0x00);                   // Send Command Byte Stream
-    // --
-    Wire.write(0xAE);                   // Turn Display Off
-    // ---
-    Wire.write(0xA8);                   // Set Multiplex Ratio
-    Wire.write(0x3f);                   // 1/64 duty cycle
-    // ---
-    Wire.write(0xD3);                   // Set Display Offset
-    Wire.write(0x00);                   // No offset applied
-    // ---
-    Wire.write(0x40);                   // Set Display Start Line #0
-    // ---
-    Wire.write(0xA1);                   // Set Segment Remap (Flips Display) A0/A1
-    // ---
-    Wire.write(0xC8);                   // COM Scan Direction c0/c8
-    // ---
-    Wire.write(0xDA);                   // Set COM pins
-    Wire.write(0x12);                   // 0x12 - See Application Note SW INIT
-    // ---
-    Wire.write(0x81);                   // Set Contrast
-    Wire.write(0x7F);                   // Default Contrast Level 127/255
-    // ---
-    Wire.write(0xA4);                   // Entire Display On - Output follows RAM Contents
-    // ---
-    Wire.write(0xA6);                   // Set Normal Display 0xA7 inverts
-    // ---
-    Wire.write(0xD5);                   // Display Clk Div
-    Wire.write(0x80);                   // Default Value 0x80
-    // ---
-    Wire.write(0x8D);                   // Setup Charge Pump - See SSD1306 Application Note
-    Wire.write(0x14);                   // Enable Charge Pump during display on.
-    // ---
-    Wire.write(0xD9);                   // Setup Precharge
-    Wire.write(0x22);                   //
-    // ---
-    Wire.write(0xDB);                   //VCOMH DESELECT
-    Wire.write(0x30);                   //
-    // ---
-    Wire.write(0x20);                   // Set Mem Addr Mode
-    Wire.write(0x00);                   // Horzontal
-
-
-    Wire.write(0xAF);                   // Display On
-    // ---
-    Wire.endTransmission(); // Stop Transmitting
-}
-/*
-void draw_buffer(){
-    // Draw buffer on display
-    Wire.beginTransmission(OLED_ADDR);
-    Wire.write(0x00);    // Control Byte Command Stream
-    Wire.write(0x21);    // Setup Column Addresses
-    Wire.write(0x00);    // Col Start Addr
-    Wire.write(0x7F);    // Col End Addr
-    Wire.write(0x22);    // Set Page Addr
-    Wire.write(0x00);    // Start Page 0
-    Wire.write(0x07);    // End Page 7
-    Wire.endTransmission();
-
-    for (uint16_t i=0; i<1024; i++){
-        Wire.beginTransmission(OLED_ADDR);
-        Wire.write(0x40);      // Control Byte Data Stream
-        for (uint8_t x=0; x<16; x++) {
-            Wire.write(buffer[i]);
-            i++;
-        }
-        i--;
-        Wire.endTransmission();
-    }
-}
-*/
-
-void clear_buffer(){
-    // Clear GFX Buffer
-    Wire.beginTransmission(OLED_ADDR);
-    Wire.write(0x00);   // Control Byte Command Stream
-    Wire.write(0x21);    // Setup Column Addresses
-    Wire.write(0x00);    // Col Start Addr
-    Wire.write(0x7F);    // Col End Addr
-    Wire.write(0x22);    // Set Page Addr
-    Wire.write(0x00);    // Start Page 0
-    Wire.write(0x07);    // End Page 7
-    Wire.endTransmission();
-
-    for (uint16_t i=0; i<1024; i++){
-        Wire.beginTransmission(OLED_ADDR);
-        Wire.write(0x40);      // Control Byte Data Stream
-        for (uint8_t x=0; x<16; x++) {
-            Wire.write(0x00);
-            i++;
-        }
-        i--;
-        Wire.endTransmission();
-    }
-}
-
-void PROGMEMwriteBuf(const uint8_t* buffer_to_write)
-{
-    for (uint16_t i=0; i<1024; i++){
-        Wire.beginTransmission(OLED_ADDR);
-        Wire.write(0x40);      // Control Byte Data Stream
-        for (uint8_t x=0; x<16; x++) {
-            Wire.write(pgm_read_byte(&buffer_to_write[i]));
-            i++;
-        }
-        i--;
-        Wire.endTransmission();
-    }
-}
-
-void writeLine(const uint8_t* buffer_name, uint8_t buffer_length){
-    // Write Text Display Line
-    // Note: Set cursor position before writing.
-
-    // For each item in data buffer
-    for (uint16_t i=0; i<buffer_length; i++){
-        Wire.beginTransmission(OLED_ADDR);
-        Wire.write(0x40);                   // Control Byte Data Stream
-        // Multiply by 6 to get char start position in the ascii_buffer
-        uint16_t offset = pgm_read_byte(&buffer_name[i]) * 6;
-        // Print each byte that makes up the character
-        for ( uint16_t x =0; x<6; x++) {
-            Wire.write(pgm_read_byte(&buffer[offset+x]));
-        }
-        Wire.endTransmission();
-    }
-    // Note: Reset the cursor position to Row 0, Col 0. Otherwise the
-    //       buffers become offset on the next loop.
-}
-
-void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_end = 0x7F, uint8_t row_end = 0x07){
-    // Set Cursor Position
-    Wire.beginTransmission(OLED_ADDR);
-    Wire.write(0x00); // Control Byte Command Stream
-    Wire.write(0x21); // Set Column Address
-    Wire.write(col_start); // Start at column 0
-    Wire.write(col_end); // End at column 127
-    Wire.write(0x22); // Set Page (Row) address
-    Wire.write(row_start); // Start Page
-    Wire.write(row_end); // End Page
-    Wire.endTransmission();
-}
-
-void setPageStartCol(uint8_t pscol){
-    uint8_t upper_nibble = (((pscol & 0xF0)>>4)|0x10);
-    uint8_t lower_nibble = pscol & 0x0F;
-    Wire.beginTransmission(OLED_ADDR);
-    Wire.write(0x00); // Control Byte Command Stream
-    Wire.write(lower_nibble); // Set Lower Col Start Addr (Page Addr Mode)
-    Wire.write(upper_nibble); // Set Upper Col Start Addr (Page Addr Mode)
-    Wire.endTransmission();
-    }
-
-void setAddressMode(uint8_t mode){
-    // 0 = Horizontal (Default/Fallback)
-    // 1 = Vertical
-    // 2 = Page
-    Wire.beginTransmission(OLED_ADDR);
-    Wire.write(0x00);       // Control Byte Command Stream
-    Wire.write(0x20);       // Setup Address Mode
-    if (mode == 0){         // Setup Horizontal Mode
-        Wire.write(0x00);   // Horizontal
-    }
-    else if (mode == 1){    // Setup Vertical Mode
-        Wire.write(0x01);   // Vertical
-    }
-    else if (mode == 2){    // Setup Page Mode
-        Wire.write(0x02);   // Page
-    }
-    else{                   // Setup Horizontal Mode as fallback option
-        Wire.write(0x00);   // Horizontal
-    }
-    Wire.endTransmission();
+    // Setup parameters for the OLED Display
+    OLED.disp_setup(OLED_ADDR);       // Setup Display
 }
 
 void loop(){
-    //draw_buffer();
-    PROGMEMwriteBuf(buffer);  // Write data to display buffer from program memory
+    OLED.PROGMEMwriteBuf(OLED_ADDR,ascii_buffer);  // Write data to display buffer from program memory
     delay(2000);
-    PROGMEMwriteBuf(buffer2);
+    OLED.PROGMEMwriteBuf(OLED_ADDR,buffer2);
     delay(2000);
-    PROGMEMwriteBuf(buffer3);
+    OLED.PROGMEMwriteBuf(OLED_ADDR,buffer3);
     delay(2000);
-    clear_buffer();     // Clear display buffer
+    OLED.clear_buffer(OLED_ADDR);     // Clear display buffer
     delay(2000);
-    setCursor(0,0);
-    writeLine(databuffer,12);
-    setCursor(2,20);
-    writeLine(databuffer,12);
-    setCursor(4,40);
-    writeLine(databuffer,12);
+    OLED.setCursor(OLED_ADDR,0,0);
+    OLED.writeLine(OLED_ADDR,databuffer,12,ascii_buffer);
+    OLED.setCursor(OLED_ADDR,2,20);
+    OLED.writeLine(OLED_ADDR,databuffer,12,ascii_buffer);
+    OLED.setCursor(OLED_ADDR,4,40);
+    OLED.writeLine(OLED_ADDR,databuffer,12,ascii_buffer);
     // DEV Note:
     // When setting the cursor location for this last item it is with the
     // knowledge that there is too much text to write than columns available on screen.
@@ -407,9 +230,8 @@ void loop(){
     // data begins to overwrite itself from the staring column.
     // In this case the data is allowed to continue onto the next page
     // but it begins to write to this page at the same starting column as before.
-    setCursor(6,80,127,7);
-    writeLine(databuffer,12);
-    setCursor(); // Reset Cursor
-
+    OLED.setCursor(OLED_ADDR,6,80,127,7);
+    OLED.writeLine(OLED_ADDR,databuffer,12);
+    OLED.setCursor(OLED_ADDR); // Reset Cursor
     delay(3000);
 }
