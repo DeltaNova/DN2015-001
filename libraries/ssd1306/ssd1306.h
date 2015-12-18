@@ -1,14 +1,14 @@
 // ssd1306.h - Header file for ssd1306.cpp
 // Library for SSD1306 OLED Display Driver
 // Author: M. Tunstall
-#include <stdint.h>         // Enable fixed width integers.
-//#include <Wire.h>           // TWI Library
-#include "twi.h"            // My wrapper around <Wire.h>
-#include <avr/pgmspace.h>
+
 #ifndef SSD1306_H //If ssd1306.h hasn't been included elsewhere, define it now.
 #define SSD1306_H
 
-
+#include <stdint.h>         // Enable fixed width integers.
+//#include <Wire.h>           // TWI Library
+//#include "twi2.h"            // My wrapper around <Wire.h>
+#include <avr/pgmspace.h>
 // Content goes here
 
 

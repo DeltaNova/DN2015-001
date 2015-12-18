@@ -21,17 +21,17 @@
     The OLED display is 128x64 pixels and uses a SSD1306 driver
     The OLED module I2C Address (7bit) is 0x3C or 0x3D
 */
-#include <avr/pgmspace.h>
-#include <Wire.h> // Arduino Library with Serial & I2C interfaces
 #include <stdint.h>         // Enable fixed width integers.
+#include <avr/pgmspace.h>
+//#include <Wire.h> // Arduino Library with Serial & I2C interfaces
+
 #include "ascii_buffer.h" // Include 'buffer' ASCII Chars & Symbols
-
+#include "twi2.h" // My Wrapper around the <Wire.h>
 #include "ssd1306.h"
-#include "twi.h" // My Wrapper around the <Wire.h>
-#define OLED_ADDR 0x3C // Address of I2C OLED Display
 
-typedef TWI I2C; // Create global instance of TWI/I2C bus called I2C
-SSD1306<I2C> OLED; // Create Global instance SSD1306 Class passing TWI/I2C interface to template
+#define OLED_ADDR 0x3C // Address of I2C OLED Display
+typedef TWI I2Cx; // Create global instance of TWI/I2C bus called I2C
+SSD1306<I2Cx> OLED; // Create Global instance SSD1306 Class passing TWI/I2C interface to template
 // ---------------------------------------------------------------------
 // PROGMEM Strings/Buffers
 // -----------------------
@@ -198,11 +198,11 @@ const uint8_t buffer3[1024] PROGMEM = {
 void setup() {
 
     //Wire.begin();       // Join I2C Bus as Master
-    I2C.init();
+    OLED.init();
 
     // Set I2C to 400KHz mode
     //TWBR=0x0C;
-    I2C.setSCLfreq(0x0C);
+    OLED.setSCLfreq(0x0C);
 
     // Setup parameters for the OLED Display
     OLED.disp_setup(OLED_ADDR);       // Setup Display
