@@ -1,9 +1,7 @@
 // twi.h - Header file for twi.cpp
 // Library for  TWI/I2C Interface
 // Author: M. Tunstall
-#include <stdint.h>         // Enable fixed width integers.
-#include <avr/io.h> // Needed for register references
-#include <Wire.h>           // Arduino TWI Library
+
 
 #ifndef TWI_H //If twi.h hasn't been included elsewhere, define it now.
 #define TWI_H
@@ -16,6 +14,10 @@
 //          Library ATMega Specific Currently
 //
 // ---------------------------------------------------------------------
+
+#include <stdint.h>         // Enable fixed width integers.
+#include <avr/io.h> // Needed for register references
+#include <Wire.h>           // Arduino TWI Library
 
 class TWI
 {
@@ -39,24 +41,24 @@ class TWI
 
 void TWI::init(){
     Wire.begin();
-}
+};
 
 void TWI::setSCLfreq(uint8_t TWBRval){
     // Set SCL Freq
     // TODO: finish
     TWBR = TWBRval; // Set TWBR Register
-}
+};
 
 void TWI::start(uint8_t address){
     Wire.beginTransmission(address);
-}
+};
 
 void TWI::send(uint8_t byte){
     Wire.write(byte);
-}
+};
 
 void TWI::stop(){
     Wire.endTransmission();
-}
+};
 
 #endif // End of ifndef TWI_H
