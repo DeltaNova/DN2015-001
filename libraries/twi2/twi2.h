@@ -3,8 +3,8 @@
 // Author: M. Tunstall
 
 
-#ifndef TWI_H //If twi.h hasn't been included elsewhere, define it now.
-#define TWI_H
+#ifndef TWI2_H //If twi.h hasn't been included elsewhere, define it now.
+#define TWI2_H
 // ---------------------------------------------------------------------
 // DEV NOTE: Move the references to the Arduino Wire library into class
 //           functions. Aim is to make it easier to switch primary code
