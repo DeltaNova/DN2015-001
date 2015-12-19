@@ -22,11 +22,11 @@
     The OLED module I2C Address (7bit) is 0x3C or 0x3D
 */
 #include <avr/pgmspace.h>
-#include <Wire.h> // Arduino Library with Serial & I2C interfaces
+#include <Wire.h>           // Arduino Serial & I2C library
 #include <stdint.h>         // Enable fixed width integers.
-#include "ascii_buffer.h" // Include 'buffer' ASCII Chars & Symbols
-#include "ssd1306.h"
-#define OLED_ADDR 0x3C // Address of I2C OLED Display
+#include "ascii_buffer.h"   // Include 'buffer' ASCII Chars & Symbols
+#include "ssd1306.h"        // SSD1306 Library
+#define OLED_ADDR 0x3C      // Address of I2C OLED Display
 
 // ---------------------------------------------------------------------
 // PROGMEM Strings/Buffers
@@ -202,176 +202,15 @@ class I2C {
 SSD1306<I2C> OLED; // Pass I2C Class into SSD1306 Class Template
 // ---------------------------------------------------------------------
 void setup() {
-    // DEV NOTE: The following lines are not required since the instance
-    //           of I2C class is created by the OLED instance of the
-    //           SSD1306 class.
-    //I2C i2c;
-    //i2c.begin();       // Join I2C Bus as Master
-    OLED.init(); // Join I2C Bus as Master
-    // Set I2C to 400KHz mode
-    //i2c.setSCLfreq(12);
-    OLED.init_bus(12);      // Set I2C to 400KHz mode
-    OLED.disp_setup(OLED_ADDR);       // Setup Display
-}
-/*
-void disp_setup(){
-    // Initialisation of OLED Display
-    i2c.beginTransmission(OLED_ADDR); // Start Transmitting
-
-    // Initialisation Based upon Application Note Example
-    i2c.write(0x00);                   // Send Command Byte Stream
-    // --
-    i2c.write(0xAE);                   // Turn Display Off
-    // ---
-    i2c.write(0xA8);                   // Set Multiplex Ratio
-    i2c.write(0x3f);                   // 1/64 duty cycle
-    // ---
-    i2c.write(0xD3);                   // Set Display Offset
-    i2c.write(0x00);                   // No offset applied
-    // ---
-    i2c.write(0x40);                   // Set Display Start Line #0
-    // ---
-    i2c.write(0xA1);                   // Set Segment Remap (Flips Display) A0/A1
-    // ---
-    i2c.write(0xC8);                   // COM Scan Direction c0/c8
-    // ---
-    i2c.write(0xDA);                   // Set COM pins
-    i2c.write(0x12);                   // 0x12 - See Application Note SW INIT
-    // ---
-    i2c.write(0x81);                   // Set Contrast
-    i2c.write(0x7F);                   // Default Contrast Level 127/255
-    // ---
-    i2c.write(0xA4);                   // Entire Display On - Output follows RAM Contents
-    // ---
-    i2c.write(0xA6);                   // Set Normal Display 0xA7 inverts
-    // ---
-    i2c.write(0xD5);                   // Display Clk Div
-    i2c.write(0x80);                   // Default Value 0x80
-    // ---
-    i2c.write(0x8D);                   // Setup Charge Pump - See SSD1306 Application Note
-    i2c.write(0x14);                   // Enable Charge Pump during display on.
-    // ---
-    i2c.write(0xD9);                   // Setup Precharge
-    i2c.write(0x22);                   //
-    // ---
-    i2c.write(0xDB);                   //VCOMH DESELECT
-    i2c.write(0x30);                   //
-    // ---
-    i2c.write(0x20);                   // Set Mem Addr Mode
-    i2c.write(0x00);                   // Horzontal
-
-
-    i2c.write(0xAF);                   // Display On
-    // ---
-    i2c.endTransmission(); // Stop Transmitting
+    OLED.init();                        // Join I2C Bus as Master
+    OLED.init_bus(12);                  // Set I2C to 400KHz mode
+    OLED.disp_setup(OLED_ADDR);         // Setup Display
 }
 
-void clear_buffer(){
-    // Clear GFX Buffer
-    i2c.beginTransmission(OLED_ADDR);
-    i2c.write(0x00);   // Control Byte Command Stream
-    i2c.write(0x21);    // Setup Column Addresses
-    i2c.write(0x00);    // Col Start Addr
-    i2c.write(0x7F);    // Col End Addr
-    i2c.write(0x22);    // Set Page Addr
-    i2c.write(0x00);    // Start Page 0
-    i2c.write(0x07);    // End Page 7
-    i2c.endTransmission();
-
-    for (uint16_t i=0; i<1024; i++){
-        i2c.beginTransmission(OLED_ADDR);
-        i2c.write(0x40);      // Control Byte Data Stream
-        for (uint8_t x=0; x<16; x++) {
-            i2c.write(0x00);
-            i++;
-        }
-        i--;
-        i2c.endTransmission();
-    }
-}
-
-void PROGMEMwriteBuf(const uint8_t* buffer_to_write)
-{
-    for (uint16_t i=0; i<1024; i++){
-        i2c.beginTransmission(OLED_ADDR);
-        i2c.write(0x40);      // Control Byte Data Stream
-        for (uint8_t x=0; x<16; x++) {
-            i2c.write(pgm_read_byte(&buffer_to_write[i]));
-            i++;
-        }
-        i--;
-        i2c.endTransmission();
-    }
-}
-
-void writeLine(const uint8_t* buffer_name, uint8_t buffer_length){
-    // Write Text Display Line
-    // Note: Set cursor position before writing.
-
-    // For each item in data buffer
-    for (uint16_t i=0; i<buffer_length; i++){
-        i2c.beginTransmission(OLED_ADDR);
-        i2c.write(0x40);                   // Control Byte Data Stream
-        // Multiply by 6 to get char start position in the ascii_buffer
-        uint16_t offset = pgm_read_byte(&buffer_name[i]) * 6;
-        // Print each byte that makes up the character
-        for ( uint16_t x =0; x<6; x++) {
-            i2c.write(pgm_read_byte(&buffer[offset+x]));
-        }
-        i2c.endTransmission();
-    }
-    // Note: Reset the cursor position to Row 0, Col 0. Otherwise the
-    //       buffers become offset on the next loop.
-}
-
-void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_end = 0x7F, uint8_t row_end = 0x07){
-    // Set Cursor Position
-    i2c.beginTransmission(OLED_ADDR);
-    i2c.write(0x00); // Control Byte Command Stream
-    i2c.write(0x21); // Set Column Address
-    i2c.write(col_start); // Start at column 0
-    i2c.write(col_end); // End at column 127
-    i2c.write(0x22); // Set Page (Row) address
-    i2c.write(row_start); // Start Page
-    i2c.write(row_end); // End Page
-    i2c.endTransmission();
-}
-
-void setPageStartCol(uint8_t pscol){
-    uint8_t upper_nibble = (((pscol & 0xF0)>>4)|0x10);
-    uint8_t lower_nibble = pscol & 0x0F;
-    i2c.beginTransmission(OLED_ADDR);
-    i2c.write(0x00); // Control Byte Command Stream
-    i2c.write(lower_nibble); // Set Lower Col Start Addr (Page Addr Mode)
-    i2c.write(upper_nibble); // Set Upper Col Start Addr (Page Addr Mode)
-    i2c.endTransmission();
-    }
-
-void setAddressMode(uint8_t mode){
-    // 0 = Horizontal (Default/Fallback)
-    // 1 = Vertical
-    // 2 = Page
-    i2c.beginTransmission(OLED_ADDR);
-    i2c.write(0x00);       // Control Byte Command Stream
-    i2c.write(0x20);       // Setup Address Mode
-    if (mode == 0){         // Setup Horizontal Mode
-        i2c.write(0x00);   // Horizontal
-    }
-    else if (mode == 1){    // Setup Vertical Mode
-        i2c.write(0x01);   // Vertical
-    }
-    else if (mode == 2){    // Setup Page Mode
-        i2c.write(0x02);   // Page
-    }
-    else{                   // Setup Horizontal Mode as fallback option
-        i2c.write(0x00);   // Horizontal
-    }
-    i2c.endTransmission();
-}
-*/
 void loop(){
-    //draw_buffer();
-    OLED.PROGMEMwriteBuf(OLED_ADDR,ascii_buffer);  // Write data to display buffer from program memory
+    // Write data to display buffer from program memory
+    OLED.PROGMEMwriteBuf(OLED_ADDR,ascii_buffer);
+
     delay(2000);
     OLED.PROGMEMwriteBuf(OLED_ADDR,buffer2);
     delay(2000);
