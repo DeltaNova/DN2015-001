@@ -197,9 +197,7 @@ class I2C {
         void setSCLfreq(uint8_t TWBRbyte){TWBR = TWBRbyte;};
 };
 
-//I2C i2c; // Instance of I2C class
-//typedef I2C TWI;
-SSD1306<I2C> OLED;
+SSD1306<I2C> OLED; // Pass I2C Class into SSD1306 Class Template
 // ---------------------------------------------------------------------
 void setup() {
     I2C i2c;
