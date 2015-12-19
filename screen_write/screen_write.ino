@@ -184,11 +184,6 @@ const uint8_t buffer3[1024] PROGMEM = {
     0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-//void disp_setup();
-//void draw_buffer();
-//void draw_buffer2();
-//void clear_buffer();
-//void setCursor(uint8_t, uint8_t, uint8_t, uint8_t);
 
 class I2C {
     // Specific to Atmega328p
@@ -202,11 +197,12 @@ class I2C {
         void setSCLfreq(uint8_t TWBRbyte){TWBR = TWBRbyte;};
 };
 
-I2C i2c; // Instance of I2C class
-typedef I2C TWI;
-SSD1306<TWI> OLED;
+//I2C i2c; // Instance of I2C class
+//typedef I2C TWI;
+SSD1306<I2C> OLED;
 // ---------------------------------------------------------------------
 void setup() {
+    I2C i2c;
     i2c.begin();       // Join I2C Bus as Master
     // Set I2C to 400KHz mode
     i2c.setSCLfreq(12);
