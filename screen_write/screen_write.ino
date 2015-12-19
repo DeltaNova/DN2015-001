@@ -186,7 +186,9 @@ const uint8_t buffer3[1024] PROGMEM = {
 
 
 class I2C {
-    // Specific to Atmega328p
+    // Specific to Atmega328p, makes use of the Arduino Wire Library.
+    // DEV NOTE: The code within each class function will need to be
+    //           changed depending on hardware.
     public:
         I2C(){} // Constructor
         ~I2C(){} // Destructor
@@ -194,16 +196,21 @@ class I2C {
         void beginTransmission(uint8_t addr){ Wire.beginTransmission(addr); }
         void write(uint8_t byte){ Wire.write(byte); }
         void endTransmission(){ Wire.endTransmission(); }
-        void setSCLfreq(uint8_t TWBRbyte){TWBR = TWBRbyte;};
+        void busfreq(uint8_t TWBRbyte){TWBR = TWBRbyte;};
 };
 
 SSD1306<I2C> OLED; // Pass I2C Class into SSD1306 Class Template
 // ---------------------------------------------------------------------
 void setup() {
-    I2C i2c;
-    i2c.begin();       // Join I2C Bus as Master
+    // DEV NOTE: The following lines are not required since the instance
+    //           of I2C class is created by the OLED instance of the
+    //           SSD1306 class.
+    //I2C i2c;
+    //i2c.begin();       // Join I2C Bus as Master
+    OLED.init(); // Join I2C Bus as Master
     // Set I2C to 400KHz mode
-    i2c.setSCLfreq(12);
+    //i2c.setSCLfreq(12);
+    OLED.init_bus(12);      // Set I2C to 400KHz mode
     OLED.disp_setup(OLED_ADDR);       // Setup Display
 }
 /*
