@@ -189,10 +189,21 @@ void draw_buffer2();
 void clear_buffer();
 void setCursor(uint8_t, uint8_t, uint8_t, uint8_t);
 
+class I2C {
+    public:
+        I2C(){}
+        void begin(){
+            Wire.begin();
+        }
+};
+
+I2C TWI;
+
 // ---------------------------------------------------------------------
 void setup() {
+    //I2C TWI{};
     //Serial.begin(9600); // Create a serial connection
-    Wire.begin();       // Join I2C Bus as Master
+    TWI.begin();       // Join I2C Bus as Master
     // Set I2C to 400KHz mode
     TWBR=12;
     disp_setup();       // Setup Display
