@@ -2,19 +2,13 @@
 // Library for SSD1306 OLED Display Driver
 // Author: M. Tunstall
 #include <stdint.h>         // Enable fixed width integers.
-//#include <Wire.h>           // TWI Library
-#include "twi.h"            // My wrapper around <Wire.h>
 #include <avr/pgmspace.h>
 #ifndef SSD1306_H //If ssd1306.h hasn't been included elsewhere, define it now.
 #define SSD1306_H
 
+// DEV NOTE: References to the I2C library have been templated to make switching hardware easier.
+// DEV NOTE: Some functions are dependant on <avr/pgmspace.h> and will not work on all hardware.
 
-// Content goes here
-
-
-// DEV NOTE: Move the references to the Arduino Wire library into class
-//           functions. Aim is to make it easier to switch primary code
-//           and library to another i2c/twi library at a later date.
 
 template< typename TWI_T >
 class SSD1306
@@ -24,10 +18,10 @@ class SSD1306
     private: // accessed by member functions but not derived classes.
 
     public: // accessed by anybody.
-        SSD1306(){ // Default Constructor
-            TWI.begin();
-        }
-        ~SSD1306(){}  // Destructor
+        SSD1306(){}      // Default Constructor
+        ~SSD1306(){}     // Destructor
+        void init(){TWI.begin();}
+        void init_bus(uint8_t bus_mode){TWI.busfreq(bus_mode);}
         void disp_setup(uint8_t OLED_ADDR);
         void clear_buffer(uint8_t OLED_ADDR);
         void setAddressMode(uint8_t OLED_ADDR, uint8_t mode);
