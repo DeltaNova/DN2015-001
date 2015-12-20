@@ -37,49 +37,32 @@ void SSD1306<TWI_T>::disp_setup(uint8_t OLED_ADDR){
     // Initialisation of OLED Display
     TWI.beginTransmission(OLED_ADDR); // Start Transmitting
     // Initialisation Based upon Application Note Example
-    TWI.write(0x00);                   // Send Command Byte Stream
-    // --
-    TWI.write(0xAE);                   // Turn Display Off
-    // ---
-    TWI.write(0xA8);                   // Set Multiplex Ratio
-    TWI.write(0x3f);                   // 1/64 duty cycle
-    // ---
-    TWI.write(0xD3);                   // Set Display Offset
-    TWI.write(0x00);                   // No offset applied
-    // ---
-    TWI.write(0x40);                   // Set Display Start Line #0
-    // ---
-    TWI.write(0xA1);                   // Set Segment Remap (Flips Display) A0/A1
-    // ---
-    TWI.write(0xC8);                   // COM Scan Direction c0/c8
-    // ---
-    TWI.write(0xDA);                   // Set COM pins
-    TWI.write(0x12);                   // 0x12 - See Application Note SW INIT
-    // ---
-    TWI.write(0x81);                   // Set Contrast
-    TWI.write(0x7F);                   // Default Contrast Level 127/255
-    // ---
-    TWI.write(0xA4);                   // Entire Display On - Output follows RAM Contents
-    // ---
-    TWI.write(0xA6);                   // Set Normal Display 0xA7 inverts
-    // ---
-    TWI.write(0xD5);                   // Display Clk Div
-    TWI.write(0x80);                   // Default Value 0x80
-    // ---
-    TWI.write(0x8D);                   // Setup Charge Pump - See SSD1306 Application Note
-    TWI.write(0x14);                   // Enable Charge Pump during display on.
-    // ---
-    TWI.write(0xD9);                   // Setup Precharge
-    TWI.write(0x22);                   //
-    // ---
-    TWI.write(0xDB);                   //VCOMH DESELECT
-    TWI.write(0x30);                   //
-    // ---
-    TWI.write(0x20);                   // Set Mem Addr Mode
-    TWI.write(0x00);                   // Horzontal
-
-    TWI.write(0xAF);                   // Display On
-    // ---
+    TWI.write(0x00);       // Send Command Byte Stream
+    TWI.write(0xAE);       // Turn Display Off
+    TWI.write(0xA8);       // Set Multiplex Ratio
+    TWI.write(0x3f);       // 1/64 duty cycle
+    TWI.write(0xD3);       // Set Display Offset
+    TWI.write(0x00);       // No offset applied
+    TWI.write(0x40);       // Set Display Start Line #0
+    TWI.write(0xA1);       // Set Segment Remap (Flips Display) A0/A1
+    TWI.write(0xC8);       // COM Scan Direction c0/c8
+    TWI.write(0xDA);       // Set COM pins
+    TWI.write(0x12);       // 0x12 - See Application Note SW INIT
+    TWI.write(0x81);       // Set Contrast
+    TWI.write(0x7F);       // Default Contrast Level 127/255
+    TWI.write(0xA4);       // Entire Display On - Output follows RAM Contents
+    TWI.write(0xA6);       // Set Normal Display 0xA7 inverts
+    TWI.write(0xD5);       // Display Clk Div
+    TWI.write(0x80);       // Default Value 0x80
+    TWI.write(0x8D);       // Setup Charge Pump - See SSD1306 Application Note
+    TWI.write(0x14);       // Enable Charge Pump during display on.
+    TWI.write(0xD9);       // Setup Precharge
+    TWI.write(0x22);       //
+    TWI.write(0xDB);       //VCOMH DESELECT
+    TWI.write(0x30);       //
+    TWI.write(0x20);       // Set Mem Addr Mode
+    TWI.write(0x00);       // Horzontal
+    TWI.write(0xAF);       // Display On
     TWI.endTransmission(); // Stop Transmitting
 }
 
