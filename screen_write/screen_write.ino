@@ -23,7 +23,7 @@
 */
 // Signal to Screen Buffers to use AVR_PROGMEM versions
 #define AVR_PROGMEM
-
+#define OLED_ADDR 0x3C      // Address of I2C OLED Display
 #include <avr/pgmspace.h>   // AVR PROGMEM Library
 #include <Wire.h>           // Arduino Serial & I2C library
 #include <stdint.h>         // Enable fixed width integers.
@@ -32,7 +32,7 @@
 #include "ascii_buffer.h"        // Include ASCII Chars & Symbols buffer
 #include "rodent_buffer.h"       // Include rodent image buffer
 #include "test_pattern_buffer.h" // Include test_pattern buffer
-#define OLED_ADDR 0x3C      // Address of I2C OLED Display
+
 // ---------------------------------------------------------------------
 // PROGMEM Strings/Buffers
 // -----------------------
@@ -53,30 +53,30 @@ class I2C {
         void busfreq(uint8_t TWBRbyte){TWBR = TWBRbyte;};
 };
 // ---------------------------------------------------------------------
-SSD1306<I2C> OLED; // Pass I2C Class into SSD1306 Class Template
+SSD1306<I2C> OLED(OLED_ADDR); // Pass I2C Class into SSD1306 Class Template
 // ---------------------------------------------------------------------
 void setup() {
     OLED.init();                        // Join I2C Bus as Master
     OLED.init_bus(12);                  // Set I2C to 400KHz mode
-    OLED.disp_setup(OLED_ADDR);         // Setup Display
+    OLED.disp_setup();         // Setup Display
 }
 
 void loop(){
     // Write data to display buffer from program memory
-    OLED.PROGMEMwriteBuf(OLED_ADDR,ascii_buffer);
+    OLED.PROGMEMwriteBuf(ascii_buffer);
     delay(2000);
-    OLED.PROGMEMwriteBuf(OLED_ADDR,rodent);
+    OLED.PROGMEMwriteBuf(rodent);
     delay(2000);
-    OLED.PROGMEMwriteBuf(OLED_ADDR,test_pattern);
+    OLED.PROGMEMwriteBuf(test_pattern);
     delay(2000);
-    OLED.clear_buffer(OLED_ADDR);     // Clear display buffer
+    OLED.clear_buffer();     // Clear display buffer
     delay(2000);
-    OLED.setCursor(OLED_ADDR,0,0);
-    OLED.writeLine(OLED_ADDR,databuffer,12,ascii_buffer);
-    OLED.setCursor(OLED_ADDR,2,20);
-    OLED.writeLine(OLED_ADDR,databuffer,12,ascii_buffer);
-    OLED.setCursor(OLED_ADDR,4,40);
-    OLED.writeLine(OLED_ADDR,databuffer,12,ascii_buffer);
+    OLED.setCursor(0,0);
+    OLED.writeLine(databuffer,12,ascii_buffer);
+    OLED.setCursor(2,20);
+    OLED.writeLine(databuffer,12,ascii_buffer);
+    OLED.setCursor(4,40);
+    OLED.writeLine(databuffer,12,ascii_buffer);
     // DEV Note:
     // When setting the cursor location for this last item it is with the
     // knowledge that there is too much text to write than columns available on screen.
@@ -84,8 +84,8 @@ void loop(){
     // data begins to overwrite itself from the staring column.
     // In this case the data is allowed to continue onto the next page
     // but it begins to write to this page at the same starting column as before.
-    OLED.setCursor(OLED_ADDR,6,80,127,7);
-    OLED.writeLine(OLED_ADDR,databuffer,12,ascii_buffer);
-    OLED.setCursor(OLED_ADDR); // Reset Cursor
+    OLED.setCursor(6,80,127,7);
+    OLED.writeLine(databuffer,12,ascii_buffer);
+    OLED.setCursor(); // Reset Cursor
     delay(3000);
 }
