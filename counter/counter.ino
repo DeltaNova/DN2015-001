@@ -37,7 +37,11 @@
 // PROGMEM Strings/Buffers
 // -----------------------
 // "Hello World!"
-const uint8_t databuffer[12] PROGMEM = {0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21};
+//const uint8_t databuffer[12] PROGMEM = {0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21};
+// Project Reference: "DN2015-001"
+const uint8_t proj_ref[10] PROGMEM = {0x44, 0x4E, 0x32, 0x30, 0x31, 0x35, 0x2D, 0x30, 0x30, 0x31};
+// Project Name: "counter"
+const uint8_t proj_name[7] PROGMEM = {0x63, 0x6F, 0x75, 0x6E, 0x74, 0x65, 0x72};
 // ---------------------------------------------------------------------
 class I2C {
     // Specific to Atmega328p, makes use of the Arduino Wire Library.
@@ -62,30 +66,34 @@ void setup() {
 }
 
 void loop(){
-    // Write data to display buffer from program memory
-    OLED.PROGMEMwriteBuf(ascii_buffer);
+
+    // Start by clearing the display bufffer, solves any startup corruption.
+    OLED.clear_buffer();
+    // Set initial cursor position
+    OLED.setCursor(0,36);
+    delay(1000);
+    // Write Project Reference to display
+    OLED.writeLine(proj_ref,10,ascii_buffer);
     delay(2000);
-    OLED.PROGMEMwriteBuf(rodent);
-    delay(2000);
-    OLED.PROGMEMwriteBuf(test_pattern);
-    delay(2000);
-    OLED.clear_buffer();     // Clear display buffer
-    delay(2000);
-    OLED.setCursor(0,0);
-    OLED.writeLine(databuffer,12,ascii_buffer);
-    OLED.setCursor(2,20);
-    OLED.writeLine(databuffer,12,ascii_buffer);
-    OLED.setCursor(4,40);
-    OLED.writeLine(databuffer,12,ascii_buffer);
-    // DEV Note:
-    // When setting the cursor location for this last item it is with the
-    // knowledge that there is too much text to write than columns available on screen.
-    // If the same page start and end address are provided then the additional
-    // data begins to overwrite itself from the staring column.
-    // In this case the data is allowed to continue onto the next page
-    // but it begins to write to this page at the same starting column as before.
-    OLED.setCursor(6,80,127,7);
-    OLED.writeLine(databuffer,12,ascii_buffer);
-    OLED.setCursor(); // Reset Cursor
+
+    // Move cursor position & write project name
+    OLED.setCursor(2,42);
+    OLED.writeLine(proj_name,7,ascii_buffer);
     delay(3000);
+
+    // Move cursor to count line
+    OLED.setCursor(4,0);
+    // The count is indicated by 'count' being displayed on the screen.
+    // This reuses the first 5 chars of the project name, hopefully saving some space.
+    // Should the project name change a string for "Count" would need to be defined.
+    OLED.writeLine(proj_name,5,ascii_buffer);
+    // Set the position that the count value will be written.
+    OLED.setCursor(4, 42);
+    // DEV NOTE:    The count will need to be rewritten when it is updated.
+    //              Changing the column/row write limits would prevent the count
+    //              overwriting other parts of the screen.
+    OLED.writeLine(proj_name,5,ascii_buffer); // TODO:Replace with count value.
+    delay(2000);
+
+
 }
