@@ -13,10 +13,10 @@
 #BOARD := pro328
 # Atmega 328p, 5V @ 16MHz
 #BOARD := pro5v328
-BOARD := atmega328
+BOARD := pro.16MHzatmega328
 
 # Adjust library path as required (space separated)
-LIBRARYPATH := /usr/share/arduino/libraries ~/Git/DN2015-001/libraries
+LIBRARYPATH := /usr/share/arduino/libraries /usr/share/arduino/hardware/arduino/avr/libraries ~/Git/DN2015-001/libraries
 
 # Include Arduino Makefile
 # ========================
