@@ -38,10 +38,10 @@
 // -----------------------
 // "Hello World!"
 //const uint8_t databuffer[12] PROGMEM = {0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0x21};
-// Project Reference: "DN2015-001"
+// Project Reference: "DN2015-001" // String Method #1 (HEX)
 const uint8_t proj_ref[10] PROGMEM = {0x44, 0x4E, 0x32, 0x30, 0x31, 0x35, 0x2D, 0x30, 0x30, 0x31};
-// Project Name: "counter"
-const uint8_t proj_name[7] PROGMEM = {0x63, 0x6F, 0x75, 0x6E, 0x74, 0x65, 0x72};
+// Project Name: "counter" // String Method #2 (ASCII)
+const uint8_t proj_name[] PROGMEM = "counter";
 // ---------------------------------------------------------------------
 class I2C {
     // Specific to Atmega328p, makes use of the Arduino Wire Library.
