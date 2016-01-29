@@ -49,7 +49,11 @@ class SSD1306
         void setCursor(uint8_t row_start = 0x00, uint8_t col_start = 0x00, uint8_t col_end = 0x7F, uint8_t row_end = 0x07);
         void setPageStartCol(uint8_t pscol);
         void PROGMEMwriteBuf(const uint8_t* buffer_to_write);
-        void writeLine(const uint8_t* buffer_name, uint8_t buffer_length, const uint8_t* symbol_buffer);
+        // writeLine - Use when buffer "IS NOT" stored in program mem. (symbol_buffer assumed to be in program mem)
+        void writeLine(uint8_t* buffer_name, uint8_t buffer_length, const uint8_t* symbol_buffer);
+
+        // PROGMEMwriteLine - Use when buffer "IS"stored in program mem. (symbol_buffer assumed to be in program mem)
+        void PROGMEMwriteLine(const uint8_t* buffer_name, uint8_t buffer_length, const uint8_t* symbol_buffer);
 
 };
 
@@ -176,7 +180,7 @@ void SSD1306<TWI_T>::PROGMEMwriteBuf(const uint8_t* buffer_to_write)
 }
 
 template< typename TWI_T >
-void SSD1306<TWI_T>::writeLine(const uint8_t* buffer_name, uint8_t buffer_length, const uint8_t* symbol_buffer){
+void SSD1306<TWI_T>::PROGMEMwriteLine(const uint8_t* buffer_name, uint8_t buffer_length, const uint8_t* symbol_buffer){
     // Write Text Display Line
     // Note: Set cursor position before writing.
 
@@ -196,5 +200,25 @@ void SSD1306<TWI_T>::writeLine(const uint8_t* buffer_name, uint8_t buffer_length
     //       buffers become offset on the next loop.
 }
 
+template< typename TWI_T >
+void SSD1306<TWI_T>::writeLine(uint8_t* buffer_name, uint8_t buffer_length, const uint8_t* symbol_buffer){
+    // Write Text Display Line
+    // Note: Set cursor position before writing.
+
+    // For each item in data buffer
+    for (uint16_t i=0; i<buffer_length; i++){
+        TWI.beginTransmission(SSD1306_ADDR);
+        TWI.write(0x40);                   // Control Byte Data Stream
+        // Multiply by 6 to get char start position in the ascii_buffer
+        uint16_t offset = buffer_name[i] * 6;
+        // Print each byte that makes up the character
+        for ( uint16_t x =0; x<6; x++) {
+            TWI.write(pgm_read_byte(&symbol_buffer[offset+x]));
+        }
+        TWI.endTransmission();
+    }
+    // Note: Reset the cursor position to Row 0, Col 0. Otherwise the
+    //       buffers become offset on the next loop.
+}
 
 #endif // End of ifndef SSD1306_H
