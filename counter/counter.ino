@@ -98,6 +98,7 @@ void loop(){
     //              Changing the column/row write limits would prevent the count
     //              overwriting other parts of the screen.
     //OLED.writeLine(proj_name,5,ascii_buffer); // TODO:Replace with count value.
+    OLED.writeChar(0x3a,ascii_buffer);
     count();
     delay(1000);
 
@@ -108,14 +109,14 @@ void count(){
     // Count up and display count on screen
     uint8_t count_buffer[6]; // TODO: Adjust later to handle bigger count.
 
-    for (uint8_t i = 0; i<101; i++){
+    for (int8_t i = -50; i<101; i++){
         // Clear count_buffer
-        strncpy(count_buffer,empty_buffer,6);
+        // DevNote: buffers should be same size. Ensure bytes moved do not exceed buffer size.
+        memmove(count_buffer,empty_buffer,6);
         // Set count write position
         OLED.setCursor(4,42);
         // Write the cleared count_buffer (erase previous count)
         OLED.PROGMEMwriteLine(empty_buffer,6,ascii_buffer);
-        //delay(2000);
         // Reset count write position
         OLED.setCursor(4,42);
         // Convert integer to string (decimal)
@@ -123,7 +124,6 @@ void count(){
         // Write the count to screen
         OLED.writeLine(count_buffer,6,ascii_buffer);
         delay(1000);
-
         }
 
 
