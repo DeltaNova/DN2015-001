@@ -72,11 +72,11 @@ void loop(){
     OLED.clear_buffer();     // Clear display buffer
     delay(2000);
     OLED.setCursor(0,0);
-    OLED.writeLine(databuffer,12,ascii_buffer);
+    OLED.PROGMEMwriteLine(databuffer,12,ascii_buffer);
     OLED.setCursor(2,20);
-    OLED.writeLine(databuffer,12,ascii_buffer);
+    OLED.PROGMEMwriteLine(databuffer,12,ascii_buffer);
     OLED.setCursor(4,40);
-    OLED.writeLine(databuffer,12,ascii_buffer);
+    OLED.PROGMEMwriteLine(databuffer,12,ascii_buffer);
     // DEV Note:
     // When setting the cursor location for this last item it is with the
     // knowledge that there is too much text to write than columns available on screen.
@@ -85,7 +85,7 @@ void loop(){
     // In this case the data is allowed to continue onto the next page
     // but it begins to write to this page at the same starting column as before.
     OLED.setCursor(6,80,127,7);
-    OLED.writeLine(databuffer,12,ascii_buffer);
+    OLED.PROGMEMwriteLine(databuffer,12,ascii_buffer);
     OLED.setCursor(); // Reset Cursor
     delay(3000);
 }
