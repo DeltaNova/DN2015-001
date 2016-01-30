@@ -21,6 +21,7 @@
     The OLED display is 128x64 pixels and uses a SSD1306 driver
     The OLED module I2C Address (7bit) is 0x3C or 0x3D
 */
+#define AVR_PROGMEM // Causes ASCII Buffer to be stored in PROGMEM
 #include <avr/pgmspace.h>
 #include <Wire.h> // Arduino Library with Serial & I2C interfaces
 #include <stdint.h>         // Enable fixed width integers.
