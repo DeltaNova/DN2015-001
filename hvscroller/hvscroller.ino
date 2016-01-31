@@ -94,7 +94,7 @@ void loop(){
     // This reuses the first 5 chars of the project name, hopefully saving some space.
     // Should the project name change a string for "Count" would need to be defined.
     OLED.PROGMEMwriteLine(count_text,6,ascii_buffer);
-
+    OLED.setupVertScrollArea(0x00,0x20);
     OLED.setupHVScroll(0x00,0,2,0x00,0x01);
     OLED.scrollToggle(1);  // Start Scrolling
     // Run counter

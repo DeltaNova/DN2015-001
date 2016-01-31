@@ -63,6 +63,8 @@ class SSD1306
         void setupHorizScroll(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t interval);
         // Horizontal & Vertical Scroll
         void setupHVScroll(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t interval, uint8_t voffset);
+        // Vertical Scroll Area
+        void setupVertScrollArea(uint8_t fixedTopRows, uint8_t scrollRows);
 };
 
 template< typename TWI_T >
@@ -282,6 +284,17 @@ void SSD1306<TWI_T>::setupHVScroll(uint8_t direction, uint8_t startPage, uint8_t
     TWI.write(interval);    // Time interval between scroll steps
     TWI.write(endPage);     // End Page Address
     TWI.write(voffset);        // Vertical Offset
+
+}
+
+template< typename TWI_T >
+void SSD1306<TWI_T>::setupVertScrollArea(uint8_t fixedTopRows, uint8_t scrollRows){
+    // Setup Vertical Scrolling Area
+    TWI.beginTransmission(SSD1306_ADDR);
+    TWI.write(0x00);    // Control Byte Command Stream
+    TWI.write(0xA3);    // Set Vertical Scroll Area
+    TWI.write(fixedTopRows); // Number of fixed rows at top of display.
+    TWI.write(scrollRows); // Number of rows to scroll below fixed rows.
     TWI.endTransmission();
 }
 
