@@ -2,6 +2,9 @@
 
 Atmega328P connecting via I2C to 128x64 OLED Display based on SSD1306 driver.
 
+## scroller
+A single oled program demonstrating scrolling functionality.
+
 ## counter
 A single oled program that lays out the screen and then paritally updates a count value.
 

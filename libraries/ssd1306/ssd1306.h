@@ -56,6 +56,11 @@ class SSD1306
         void PROGMEMwriteLine(const uint8_t* buffer_name, uint8_t buffer_length, const uint8_t* symbol_buffer);
         // writeChar - Write a single character to screen
         void writeChar(uint8_t char2write, const uint8_t* symbol_buffer);
+        // Toggle Scrolling - OFF: FALSE, ON: TRUE
+        void scrollToggle(bool toggle);
+
+        // Horizontal Scroller
+        void setupHorizScroll(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t interval);
 };
 
 template< typename TWI_T >
@@ -63,7 +68,7 @@ void SSD1306<TWI_T>::disp_setup(){
     // Initialisation of OLED Display
     TWI.beginTransmission(SSD1306_ADDR); // Start Transmitting
     // Initialisation Based upon Application Note Example
-    TWI.write(0x00);       // Send Command Byte Stream
+    TWI.write(0x00);       // Control Byte Command Stream
     TWI.write(0xAE);       // Turn Display Off
     TWI.write(0xA8);       // Set Multiplex Ratio
     TWI.write(0x3f);       // 1/64 duty cycle
@@ -96,7 +101,7 @@ template< typename TWI_T >
 void SSD1306<TWI_T>::clear_buffer(){
     // Clear GFX Buffer
     TWI.beginTransmission(SSD1306_ADDR);
-    TWI.write(0x00);   // Control Byte Command Stream
+    TWI.write(0x00);    // Control Byte Command Stream
     TWI.write(0x21);    // Setup Column Addresses
     TWI.write(0x00);    // Col Start Addr
     TWI.write(0x7F);    // Col End Addr
@@ -238,6 +243,38 @@ void SSD1306<TWI_T>::writeChar(uint8_t char2write, const uint8_t* symbol_buffer)
 
     // Note: Reset the cursor position to Row 0, Col 0. Otherwise the
     //       buffers become offset on the next loop.
+}
+template< typename TWI_T >
+void SSD1306<TWI_T>::setupHorizScroll(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t interval){
+    // Continuous Horizontal Scroller
+
+    TWI.beginTransmission(SSD1306_ADDR);
+    TWI.write(0x00);    // Control Byte Command Stream
+    if (direction == 0x00){
+        TWI.write(0x26); // Scroll Right
+    }else{
+        TWI.write(0x27); // Scroll Left
+    }
+    TWI.write(0x00);        // Dummy Byte 0x00
+    TWI.write(startPage);   // Start Page Address
+    TWI.write(interval);    // Time interval between scroll steps
+    TWI.write(endPage);     // End Page Address
+    TWI.write(0x00);        // Dummy Byte 0x00
+    TWI.write(0xFF);        // Dummy Byte 0xFF
+    TWI.endTransmission();
+}
+
+template< typename TWI_T >
+void SSD1306<TWI_T>::scrollToggle(bool toggle){
+    // Toggle Scrolling
+    TWI.beginTransmission(SSD1306_ADDR);
+    TWI.write(0x00);    // Control Byte Command Stream
+    if (toggle){
+        TWI.write(0x2F); // TRUE - Activate Scroll
+    }else{
+        TWI.write(0x2E); // FALSE - Deactivate Scroll
+    }
+    TWI.endTransmission();
 }
 
 #endif // End of ifndef SSD1306_H
