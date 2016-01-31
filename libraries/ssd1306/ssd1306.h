@@ -59,8 +59,10 @@ class SSD1306
         // Toggle Scrolling - OFF: FALSE, ON: TRUE
         void scrollToggle(bool toggle);
 
-        // Horizontal Scroller
+        // Continuous Horizontal Scroller
         void setupHorizScroll(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t interval);
+        // Horizontal & Vertical Scroll
+        void setupHVScroll(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t interval, uint8_t voffset);
 };
 
 template< typename TWI_T >
@@ -261,6 +263,25 @@ void SSD1306<TWI_T>::setupHorizScroll(uint8_t direction, uint8_t startPage, uint
     TWI.write(endPage);     // End Page Address
     TWI.write(0x00);        // Dummy Byte 0x00
     TWI.write(0xFF);        // Dummy Byte 0xFF
+    TWI.endTransmission();
+}
+
+template< typename TWI_T >
+void SSD1306<TWI_T>::setupHVScroll(uint8_t direction, uint8_t startPage, uint8_t endPage, uint8_t interval, uint8_t voffset){
+    // Horizontal & Vertical Scroller
+
+    TWI.beginTransmission(SSD1306_ADDR);
+    TWI.write(0x00);    // Control Byte Command Stream
+    if (direction == 0x00){
+        TWI.write(0x29); // Scroll Right
+    }else{
+        TWI.write(0x2A); // Scroll Left
+    }
+    TWI.write(0x00);        // Dummy Byte 0x00
+    TWI.write(startPage);   // Start Page Address
+    TWI.write(interval);    // Time interval between scroll steps
+    TWI.write(endPage);     // End Page Address
+    TWI.write(voffset);        // Vertical Offset
     TWI.endTransmission();
 }
 
